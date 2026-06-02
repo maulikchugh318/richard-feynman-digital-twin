@@ -1,0 +1,11 @@
+.env
+
+__pycache__/
+*.pyc
+
+data/chroma_db/
+data/memory_chroma/
+
+logs/
+
+*.db
