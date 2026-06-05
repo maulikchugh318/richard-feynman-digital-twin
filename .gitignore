@@ -9,3 +9,4 @@ data/memory_chroma/
 logs/
 
 *.db
+data/audio/

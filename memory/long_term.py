@@ -1,4 +1,5 @@
 import sqlite3
+from datetime import datetime
 
 from config import settings
 
@@ -22,7 +23,8 @@ class LongTermMemory:
             """
             CREATE TABLE IF NOT EXISTS memories(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                content TEXT
+                content TEXT,
+                created_at TEXT
             )
             """
         )
@@ -38,10 +40,13 @@ class LongTermMemory:
 
         cursor.execute(
             """
-            INSERT INTO memories(content)
-            VALUES(?)
+            INSERT INTO memories(content, created_at)
+            VALUES(?, ?)
             """,
-            (content,)
+            (
+                content,
+                datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            )
         )
 
         self.conn.commit()
@@ -54,6 +59,7 @@ class LongTermMemory:
             """
             SELECT content
             FROM memories
+            ORDER BY id DESC
             """
         )
 
@@ -61,3 +67,43 @@ class LongTermMemory:
             row[0]
             for row in cursor.fetchall()
         ]
+
+    def get_memories_with_time(self):
+
+        cursor = self.conn.cursor()
+
+        cursor.execute(
+            """
+            SELECT id, content, created_at
+            FROM memories
+            ORDER BY id DESC
+            """
+        )
+
+        return cursor.fetchall()
+
+    def count_memories(self):
+
+        cursor = self.conn.cursor()
+
+        cursor.execute(
+            """
+            SELECT COUNT(*)
+            FROM memories
+            """
+        )
+
+        return cursor.fetchone()[0]
+
+
+    def clear_memories(self):
+
+        cursor = self.conn.cursor()
+
+        cursor.execute(
+            """
+            DELETE FROM memories
+            """
+        )
+
+        self.conn.commit()    
